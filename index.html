@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lavéa — Nettoyage automobile écologique à domicile</title>
-<meta name="description" content="Lavéa : nettoyage automobile écologique à domicile, sans eau, produits biodégradables. Service premium partout en France.">
+<meta name="description" content="Lavéa : nettoyage automobile premium à domicile, à Bordeaux et ses environs. Résultat showroom, produits professionnels.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
@@ -758,31 +758,44 @@ section[id]{ scroll-margin-top: 88px; }
   gap: 50px;
   align-items:center;
 }
+.team-people{
+  display:flex;
+  gap:16px;
+}
 .team-card{
   background: var(--card);
   border:1px solid var(--line);
   border-radius: var(--radius);
-  padding: 30px;
+  padding: 24px 16px;
   text-align:center;
+  flex:1;
 }
 .avatar-big{
-  width:96px; height:96px;
-  margin:0 auto 18px;
+  width:84px; height:84px;
+  margin:0 auto 16px;
   border-radius:50%;
   background: conic-gradient(from 140deg, var(--pine), var(--citrus), var(--pine));
   position:relative;
+  overflow:hidden;
 }
-.avatar-big::after{
-  content:"LB";
+.avatar-big img{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  border-radius:50%;
+  z-index:2;
+}
+.avatar-big .avatar-initials{
   position:absolute; inset:6px;
   border-radius:50%;
   background: var(--mist);
   display:flex; align-items:center; justify-content:center;
-  font-family: var(--serif); font-size:24px; font-style:italic;
+  font-family: var(--serif); font-size:20px; font-style:italic;
   color: var(--pine);
+  z-index:1;
 }
-.team-card h3{ font-size:19px; }
-.team-card span{ font-size:13px; color:var(--metal); }
+.team-card h3{ font-size:16.5px; margin-top:2px; }
+.team-card span{ font-size:12.5px; color:var(--metal); }
 .team-copy p{ font-size:15px; line-height:1.75; color:#3A4A40; margin-bottom:16px; }
 .team-copy p:first-child{
   font-family: var(--serif); font-size:22px; font-style:italic; color:var(--ink); line-height:1.5;
@@ -910,7 +923,7 @@ footer{
   .counters{ grid-template-columns:1fr 1fr; }
   .testi-track{ grid-template-columns:1fr; }
   .team-wrap{ grid-template-columns:1fr; text-align:center; }
-  .team-card{ max-width:320px; margin:0 auto; }
+  .team-people{ max-width:360px; margin:0 auto; }
   .contact-grid{ grid-template-columns:1fr; }
   .contact{ padding:36px; }
 }
@@ -968,16 +981,16 @@ footer{
     <div class="mist mist-2"></div>
     <div class="container hero-grid">
       <div>
-        <div class="eyebrow reveal">Nettoyage automobile écologique</div>
-        <h1 class="reveal">Votre voiture retrouve son <em>éclat</em>, sans une goutte d'eau</h1>
-        <p class="lead reveal">Lavéa intervient directement chez vous, partout en France, avec des produits biodégradables et une technique sans eau. Un résultat showroom, sans déplacement ni gaspillage.</p>
+        <div class="eyebrow reveal">Nettoyage automobile premium</div>
+        <h1 class="reveal">Votre voiture retrouve son <em>éclat</em>, sans bouger de chez vous</h1>
+        <p class="lead reveal">Lavéa intervient directement chez vous, à Bordeaux et dans les communes voisines, avec des produits professionnels et un savoir-faire artisanal. Un résultat showroom, sans prise de tête.</p>
         <div class="hero-actions reveal">
           <a href="#contact" class="btn btn-primary">Réserver mon créneau</a>
           <span class="hero-note">Devis en moins de 2 minutes</span>
         </div>
         <div class="hero-stats reveal">
-          <div class="stat"><b>0 L</b><span>d'eau utilisée</span></div>
-          <div class="stat"><b>100%</b><span>produits biodégradables</span></div>
+          <div class="stat"><b>100%</b><span>à domicile</span></div>
+          <div class="stat"><b>7j/7</b><span>créneaux disponibles</span></div>
           <div class="stat"><b>4.9/5</b><span>satisfaction client</span></div>
         </div>
       </div>
@@ -1032,15 +1045,15 @@ footer{
 
   <div class="marquee-wrap">
     <div class="marquee">
-      <span>Sans eau <b>·</b></span>
-      <span>Produits <b>biodégradables</b> <b>·</b></span>
       <span>Intervention <b>à domicile</b> <b>·</b></span>
-      <span>Partout en <b>France</b> <b>·</b></span>
+      <span>Produits <b>professionnels</b> <b>·</b></span>
+      <span>Bordeaux <b>& alentours</b> <b>·</b></span>
+      <span>Disponible <b>7j/7</b> <b>·</b></span>
       <span>Résultat <b>showroom</b> <b>·</b></span>
-      <span>Sans eau <b>·</b></span>
-      <span>Produits <b>biodégradables</b> <b>·</b></span>
       <span>Intervention <b>à domicile</b> <b>·</b></span>
-      <span>Partout en <b>France</b> <b>·</b></span>
+      <span>Produits <b>professionnels</b> <b>·</b></span>
+      <span>Bordeaux <b>& alentours</b> <b>·</b></span>
+      <span>Disponible <b>7j/7</b> <b>·</b></span>
       <span>Résultat <b>showroom</b> <b>·</b></span>
     </div>
   </div>
@@ -1094,14 +1107,14 @@ footer{
       </div>
 
       <div class="stage-copy">
-        <div class="stage-line active" data-i="0">Votre voiture mérite mieux qu'un jet d'eau.</div>
-        <div class="stage-line" data-i="1">Nos formules encapsulent la saleté, sans rincer.</div>
-        <div class="stage-line" data-i="2">Zéro eau. Zéro déplacement. Résultat showroom.</div>
+        <div class="stage-line active" data-i="0">Votre voiture mérite mieux qu'un simple lavage rapide.</div>
+        <div class="stage-line" data-i="1">Nos techniciens interviennent avec un savoir-faire artisanal.</div>
+        <div class="stage-line" data-i="2">Zéro déplacement. Résultat showroom, à chaque passage.</div>
         <div class="stage-line" data-i="3">Lavéa s'occupe de tout, devant chez vous.</div>
       </div>
 
       <div class="stage-chips" id="stageChips">
-        <span>+1200 véhicules</span><span>4.9/5 satisfaction</span><span>Partout en France</span>
+        <span>+1200 véhicules</span><span>4.9/5 satisfaction</span><span>Bordeaux & alentours</span>
       </div>
 
       <div class="stage-progress"><div class="stage-progress-bar" id="stageProgressBar"></div></div>
@@ -1114,20 +1127,20 @@ footer{
       <div class="section-head reveal">
         <div>
           <div class="eyebrow">Notre méthode</div>
-          <h2 class="text-reveal">Un protocole pensé pour votre véhicule et pour l'environnement</h2>
+          <h2 class="text-reveal">Un protocole pensé pour votre véhicule et votre exigence</h2>
         </div>
         <p>Chaque intervention suit le même standard, chez vous, où que vous soyez.</p>
       </div>
       <div class="pillars">
         <div class="pillar reveal">
           <div class="num">01</div>
-          <h3>Technique sans eau</h3>
-          <p>Nos formules encapsulent la saleté sans rinçage, préservant les ressources en eau tout en respectant chaque surface du véhicule.</p>
+          <h3>Savoir-faire artisanal</h3>
+          <p>Chaque véhicule est traité à la main, poste par poste, par des techniciens formés aux exigences du détailing premium.</p>
         </div>
         <div class="pillar reveal">
           <div class="num">02</div>
-          <h3>Produits biodégradables</h3>
-          <p>Formulations certifiées, sans danger pour les enfants, les animaux ou les sols, pensées pour un usage responsable au quotidien.</p>
+          <h3>Produits professionnels</h3>
+          <p>Des gammes sélectionnées pour leur efficacité, adaptées à chaque surface : carrosserie, cuir, tissu et plastiques.</p>
         </div>
         <div class="pillar reveal">
           <div class="num">03</div>
@@ -1208,8 +1221,8 @@ footer{
         </div>
         <div class="step reveal">
           <div class="step-num">03</div>
-          <h3>Nettoyage sans eau</h3>
-          <p>Application de nos formules biodégradables, sans rinçage ni nuisance.</p>
+          <h3>Nettoyage minutieux</h3>
+          <p>Application de nos produits professionnels, poste par poste, sans nuisance pour votre entourage.</p>
         </div>
         <div class="step reveal">
           <div class="step-num">04</div>
@@ -1226,22 +1239,22 @@ footer{
       <div class="zones-wrap reveal">
         <div>
           <div class="eyebrow" style="color:var(--citrus)">Zones d'intervention</div>
-          <h2 class="text-reveal">Un service disponible partout en France</h2>
-          <p>Que vous soyez en centre-ville ou en périphérie, notre équipe se déplace jusqu'à vous avec le même niveau d'exigence.</p>
+          <h2 class="text-reveal">Un service disponible partout à Bordeaux</h2>
+          <p>Que vous soyez au centre-ville ou dans les communes voisines, notre équipe se déplace jusqu'à vous avec le même niveau d'exigence.</p>
         </div>
         <div class="chip-grid">
-          <span class="chip">Île-de-France</span>
-          <span class="chip">Normandie</span>
-          <span class="chip">Hauts-de-France</span>
-          <span class="chip">Auvergne-Rhône-Alpes</span>
-          <span class="chip">Nouvelle-Aquitaine</span>
-          <span class="chip">Occitanie</span>
-          <span class="chip">Grand Est</span>
-          <span class="chip">Pays de la Loire</span>
-          <span class="chip">Bretagne</span>
-          <span class="chip">Provence-Alpes-Côte d'Azur</span>
-          <span class="chip">Bourgogne-Franche-Comté</span>
-          <span class="chip">Centre-Val de Loire</span>
+          <span class="chip">Bordeaux</span>
+          <span class="chip">Pessac</span>
+          <span class="chip">Mérignac</span>
+          <span class="chip">Le Haillan</span>
+          <span class="chip">Gradignan</span>
+          <span class="chip">Le Bouscat</span>
+          <span class="chip">Talence</span>
+          <span class="chip">Bègles</span>
+          <span class="chip">Eysines</span>
+          <span class="chip">Bruges</span>
+          <span class="chip">Villenave-d'Ornon</span>
+          <span class="chip">Cenon</span>
         </div>
       </div>
     </div>
@@ -1256,8 +1269,8 @@ footer{
           <span>véhicules nettoyés</span>
         </div>
         <div class="counter-card reveal">
-          <b data-count="18000">0</b>
-          <span>litres d'eau économisés</span>
+          <b data-count="12">0</b>
+          <span>communes couvertes</span>
         </div>
         <div class="counter-card reveal">
           <b data-count="96">0</b>
@@ -1284,18 +1297,33 @@ footer{
       <div class="testi-track">
         <div class="testi reveal">
           <div class="stars">★★★★★</div>
-          <p>"Passage impeccable, ponctuel, et ma voiture n'a jamais été aussi propre. La technique sans eau m'a bluffé."</p>
-          <div class="who"><div class="who-avatar"></div><div><b>Camille R.</b><span>Cliente régulière</span></div></div>
+          <p>"Passage impeccable, ponctuel, et ma voiture n'a jamais été aussi propre. Un vrai travail de professionnel."</p>
+          <div class="who"><div class="who-avatar"></div><div><b>Camille R.</b><span>Cliente régulière — Pessac</span></div></div>
         </div>
         <div class="testi reveal">
           <div class="stars">★★★★★</div>
           <p>"Service à domicile très pratique, je n'ai eu qu'à leur laisser les clés. Résultat au niveau d'un centre premium."</p>
-          <div class="who"><div class="who-avatar"></div><div><b>Julien M.</b><span>Client entreprise</span></div></div>
+          <div class="who"><div class="who-avatar"></div><div><b>Julien M.</b><span>Client entreprise — Bordeaux</span></div></div>
         </div>
         <div class="testi reveal">
           <div class="stars">★★★★★</div>
-          <p>"J'apprécie l'approche écologique, ça change tout de savoir que les produits sont sans danger pour mes enfants."</p>
-          <div class="who"><div class="who-avatar"></div><div><b>Sophie D.</b><span>Cliente particulière</span></div></div>
+          <p>"J'apprécie le sérieux de l'équipe, toujours à l'heure et un résultat impeccable à chaque passage."</p>
+          <div class="who"><div class="who-avatar"></div><div><b>Sophie D.</b><span>Cliente particulière — Mérignac</span></div></div>
+        </div>
+        <div class="testi reveal">
+          <div class="stars">★★★★★</div>
+          <p>"Prise de rendez-vous en deux minutes et intervention le lendemain. Ma voiture ressort comme neuve à chaque fois."</p>
+          <div class="who"><div class="who-avatar"></div><div><b>Nicolas T.</b><span>Client régulier — Gradignan</span></div></div>
+        </div>
+        <div class="testi reveal">
+          <div class="stars">★★★★★</div>
+          <p>"L'intérieur cuir a été traité avec beaucoup de soin, un vrai résultat de professionnel. Je recommande sans hésiter."</p>
+          <div class="who"><div class="who-avatar"></div><div><b>Anaïs L.</b><span>Cliente particulière — Le Bouscat</span></div></div>
+        </div>
+        <div class="testi reveal">
+          <div class="stars">★★★★★</div>
+          <p>"Équipe sérieuse et discrète, intervention pendant que je télétravaillais. Très pratique et un résultat au top."</p>
+          <div class="who"><div class="who-avatar"></div><div><b>Karim B.</b><span>Client particulier — Le Haillan</span></div></div>
         </div>
       </div>
     </div>
@@ -1305,14 +1333,27 @@ footer{
   <section>
     <div class="container">
       <div class="team-wrap reveal">
-        <div class="team-card">
-          <div class="avatar-big"></div>
-          <h3>Léo Barrot</h3>
-          <span>Fondateur, Lavéa</span>
+        <div class="team-people">
+          <div class="team-card">
+            <div class="avatar-big">
+              <span class="avatar-initials">L</span>
+              <img src="leo.png" alt="Léo" onerror="this.style.display='none'">
+            </div>
+            <h3>Léo</h3>
+            <span>Fondateur, Lavéa</span>
+          </div>
+          <div class="team-card">
+            <div class="avatar-big">
+              <span class="avatar-initials">D</span>
+              <img src="demetre.png" alt="Demetre" onerror="this.style.display='none'">
+            </div>
+            <h3>Demetre</h3>
+            <span>Associé, Lavéa</span>
+          </div>
         </div>
         <div class="team-copy">
-          <p>"J'ai créé Lavéa avec une conviction simple : prendre soin d'une voiture ne devrait jamais coûter à l'environnement."</p>
-          <p>Après plusieurs années à concevoir des expériences de marque, Léo a voulu appliquer la même exigence de qualité et de design à un service du quotidien : le nettoyage automobile. Lavéa est né de cette envie de conjuguer soin, esthétique et responsabilité, avec une équipe formée aux méthodes de nettoyage sans eau.</p>
+          <p>"On a créé Lavéa avec une conviction simple : prendre soin d'une voiture ne devrait jamais être une corvée."</p>
+          <p>Après plusieurs années à concevoir des expériences de marque, Léo a voulu appliquer la même exigence de qualité et de design à un service du quotidien : le nettoyage automobile. Avec Demetre, ils ont construit Lavéa autour d'une équipe formée aux méthodes de detailing professionnel, avec un seul mot d'ordre : le sérieux à chaque intervention.</p>
         </div>
       </div>
     </div>
@@ -1326,11 +1367,11 @@ footer{
           <div>
             <div class="eyebrow" style="color:var(--citrus)">Contact</div>
             <h2 class="text-reveal">Demandez votre devis gratuit</h2>
-            <p class="sub">Réponse sous 24h. Notre équipe revient vers vous pour confirmer votre créneau, partout en France.</p>
+            <p class="sub">Réponse sous 24h. Notre équipe revient vers vous pour confirmer votre créneau, à Bordeaux et dans les communes voisines.</p>
             <div class="contact-list">
               <a href="mailto:uipact@gmail.com"><span class="ico">✉</span> uipact@gmail.com</a>
               <a href="tel:06xxxxxxxx"><span class="ico">☎</span> 06.xx.xx.xx.xx</a>
-              <a href="#"><span class="ico">⚑</span> Intervention partout en France</a>
+              <a href="#"><span class="ico">⚑</span> Bordeaux et communes voisines</a>
             </div>
           </div>
           <div class="form-card">
@@ -1367,7 +1408,7 @@ footer{
     <div class="footer-top">
       <div>
         <a href="#top" class="logo"><span class="mark"></span>Lavéa</a>
-        <p style="max-width:260px; font-size:13.5px; color:var(--metal); margin-top:14px; line-height:1.6;">Nettoyage automobile écologique à domicile, partout en France.</p>
+        <p style="max-width:260px; font-size:13.5px; color:var(--metal); margin-top:14px; line-height:1.6;">Nettoyage automobile premium à domicile, à Bordeaux et ses environs.</p>
       </div>
       <div class="footer-cols">
         <div class="footer-col">
@@ -1381,7 +1422,7 @@ footer{
           <h4>Contact</h4>
           <span>uipact@gmail.com</span>
           <span>06.xx.xx.xx.xx</span>
-          <span>France</span>
+          <span>Bordeaux</span>
         </div>
         <div class="footer-col">
           <h4>Suivez-nous</h4>
