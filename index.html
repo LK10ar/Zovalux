@@ -354,7 +354,9 @@ html.dark .hero::after{
   border: 1px solid rgba(255,255,255,.5);
   cursor: ew-resize;
   user-select:none;
-  background: var(--pine);
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255,255,255,.3), transparent 42%),
+    linear-gradient(150deg, #3A3A3A, #141414 72%);
   transform-style: preserve-3d;
   will-change: transform;
 }
@@ -362,11 +364,6 @@ html.dark .hero::after{
   position:absolute; inset:0;
   display:flex; align-items:center; justify-content:center;
   overflow:hidden;
-}
-.compare-after{
-  background:
-    radial-gradient(circle at 28% 18%, rgba(255,255,255,.3), transparent 42%),
-    linear-gradient(150deg, #3A3A3A, #141414 72%);
 }
 .compare-after::before{
   content:"";
@@ -383,19 +380,18 @@ html.dark .hero::after{
   100%{ transform: translateX(40%); opacity:0; }
 }
 .compare-before{
-  background: linear-gradient(150deg, #837A67, #4F4A3D 75%);
   clip-path: inset(0 0 0 50%);
 }
 .compare-photo{
-  width:92%;
-  height:88%;
+  width:96%;
+  height:94%;
   object-fit: contain;
-  filter: drop-shadow(0 18px 22px rgba(0,0,0,.4));
+  filter: drop-shadow(0 18px 22px rgba(0,0,0,.45));
   position:relative;
   z-index:1;
 }
 .compare-before .compare-photo{
-  filter: drop-shadow(0 18px 22px rgba(0,0,0,.3)) saturate(0.9) brightness(0.92);
+  filter: drop-shadow(0 18px 22px rgba(0,0,0,.35)) saturate(0.85) brightness(0.85) contrast(1.05);
 }
 
 .sparkle{
@@ -995,21 +991,96 @@ footer{
   .contact{ padding:36px; }
 }
 @media (max-width: 680px){
-  .container{ padding:0 20px; }
+  .container{ padding:0 18px; }
+
+  /* Nav */
+  .nav{ padding:14px 18px; }
+  .logo{ font-size:18px; gap:8px; }
+  .logo .mark{ width:28px; height:28px; }
   .nav-links{ display:none; }
+  .nav-cta{ gap:8px; }
   .btn-ghost{ display:none !important; }
-  .burger{ display:flex; }
-  .hero{ padding: 46px 0 40px; }
-  .hero-stats{ flex-wrap:wrap; gap:20px 30px; }
-  .pillars{ grid-template-columns:1fr; }
-  .services{ grid-template-columns:1fr; }
+  .btn-primary{ padding:10px 14px; font-size:12.5px; white-space:nowrap; }
+  .theme-toggle{ width:38px; height:38px; }
+  .theme-toggle svg{ width:17px; height:17px; }
+  .burger{ display:flex; width:38px; height:38px; }
+  .mobile-menu{ padding:6px 18px 18px; }
+
+  /* Hero */
+  .hero{ padding: 34px 0 36px; }
+  .hero::before{ width:340px; height:340px; top:-140px; right:-120px; }
+  .eyebrow{ font-size:11px; }
+  .hero h1{ font-size: clamp(28px, 8vw, 38px); margin: 14px 0 16px; letter-spacing:-0.01em; }
+  .hero p.lead{ font-size:15px; max-width:100%; margin-bottom:22px; }
+  .hero-actions{ gap:14px; }
+  .hero-actions .btn-primary{ width:100%; justify-content:center; padding:14px 22px; font-size:14px; }
+  .hero-note{ font-size:12px; }
+  .hero-stats{ flex-wrap:wrap; gap:16px 24px; margin-top:30px; padding-top:20px; }
+  .stat b{ font-size:21px; }
+
+  /* Before/after compare card */
+  .compare-stage{ margin-top:32px; perspective:none; }
+  .compare{ aspect-ratio: 4/3.6; border-radius:20px; }
+  .compare-photo{ width:98%; height:96%; }
+  .compare-label{ font-size:10px; padding:5px 10px; top:12px; }
+  .compare-handle::after{ width:38px; height:38px; font-size:13px; }
+  .compare-caption{ font-size:11px; bottom:12px; left:14px; right:14px; }
+
+  /* Scroll stage */
+  .scroll-stage{ height: 260vh; }
+  .stage-eyebrow{ font-size:10.5px; top:7%; }
+  .stage-copy{ top:16%; width:92vw; }
+  .stage-chips{ bottom:70px; gap:8px; }
+  .stage-chips span{ font-size:9.5px; padding:6px 10px; }
+  .stage-progress{ bottom:34px; width:80vw; }
+
+  /* Sections */
+  section{ padding: 48px 0; }
+  .section-head{ flex-direction:column; align-items:flex-start; gap:12px; margin-bottom:34px; }
+  .section-head h2{ font-size: clamp(24px, 6.5vw, 30px); margin-top:10px; }
+  .section-head p{ max-width:100%; font-size:13.5px; }
+  .eyebrow::before{ width:14px; }
+
+  .pillars{ grid-template-columns:1fr; gap:14px; }
+  .pillar{ padding:24px 20px; }
+  .services{ grid-template-columns:1fr; gap:14px; }
+  .service-card{ min-height:auto; padding:24px 22px 22px; }
   .process{ grid-template-columns:1fr; }
-  .step{ border-right:none; padding-right:0; }
-  .counters{ grid-template-columns:1fr 1fr; }
-  section{ padding: 60px 0; }
-  .section-head{ flex-direction:column; align-items:flex-start; gap:14px; }
-  .footer-cols{ gap:36px; }
+  .step{ border-right:none; padding:22px 0; border-bottom:1px solid var(--line); }
+  .step:last-child{ border-bottom:none; }
+
+  .zones-wrap{ padding:26px 22px; border-radius:22px; }
+  .chip{ font-size:11.5px; padding:8px 12px; }
+
+  .counters{ grid-template-columns:1fr 1fr; gap:12px; }
+  .counter-card{ padding:22px 12px; }
+  .counter-card b{ font-size:26px; }
+  .counter-card span{ font-size:11.5px; }
+
+  .testi-track{ grid-template-columns:1fr; gap:14px; }
+  .testi{ padding:22px; }
+
+  .team-wrap{ gap:28px; }
+  .team-people{ gap:12px; }
+  .avatar-big{ width:64px; height:64px; }
+  .team-copy p:first-child{ font-size:18px; }
+
+  .contact{ padding:26px 20px; border-radius:22px; }
+  .contact-grid{ gap:32px; }
+  .form-card{ padding:20px; }
+
+  .footer-cols{ gap:28px 36px; }
   .footer-top{ flex-direction:column; }
+  .footer-bottom{ flex-direction:column; align-items:flex-start; gap:8px; }
+}
+
+@media (max-width: 400px){
+  .btn-primary{ padding:9px 12px; font-size:11.5px; }
+  .nav-cta{ gap:6px; }
+  .logo{ font-size:16px; }
+  .hero h1{ font-size: clamp(25px, 8.5vw, 32px); }
+  .counters{ grid-template-columns:1fr 1fr; }
+  .compare{ aspect-ratio: 4/3.9; }
 }
 </style>
 </head>
