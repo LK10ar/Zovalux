@@ -391,16 +391,6 @@ html.dark .hero::after{
 .compare.is-revealed .compare-before{
   opacity:0;
 }
-.compare-before::after{
-  content:"";
-  position:absolute; inset:0;
-  background:
-    radial-gradient(circle at 32% 72%, rgba(94,74,42,.4), transparent 58%),
-    radial-gradient(circle at 68% 28%, rgba(76,60,36,.32), transparent 55%);
-  mix-blend-mode: multiply;
-  pointer-events:none;
-  z-index:2;
-}
 .compare-photo{
   width:96%;
   height:94%;
@@ -557,15 +547,6 @@ html.dark .scroll-stage{ background:#0A0A0A; }
 }
 #stageDirty .stage-photo{
   filter: drop-shadow(0 30px 46px rgba(0,0,0,.55)) sepia(0.4) saturate(0.55) brightness(0.68) contrast(1.15);
-}
-#stageDirty::after{
-  content:"";
-  position:absolute; inset:0;
-  background:
-    radial-gradient(circle at 32% 72%, rgba(94,74,42,.35), transparent 58%),
-    radial-gradient(circle at 68% 28%, rgba(76,60,36,.28), transparent 55%);
-  mix-blend-mode: multiply;
-  pointer-events:none;
 }
 .stage-copy{
   position:absolute; left:50%; top:20%;
