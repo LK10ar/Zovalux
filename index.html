@@ -142,17 +142,9 @@ header{
 }
 .logo .mark{
   width:34px; height:34px;
-  border-radius:50%;
-  background: conic-gradient(from 210deg, var(--pine), var(--citrus) 60%, var(--pine));
-  position:relative;
   flex-shrink:0;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.4);
-}
-.logo .mark::after{
-  content:"";
-  position:absolute; inset:8px;
-  border-radius:50%;
-  background: var(--mist);
+  object-fit: contain;
+  display:block;
 }
 .nav-links{
   display:flex; gap:34px;
@@ -403,40 +395,7 @@ html.dark .hero::after{
   filter: drop-shadow(0 18px 22px rgba(0,0,0,.35)) sepia(0.4) saturate(0.55) brightness(0.7) contrast(1.15);
 }
 
-/* Pluie d'étoiles qui balaie l'image au survol */
-.compare-stars{
-  position:absolute; inset:0;
-  z-index:5;
-  pointer-events:none;
-  overflow:hidden;
-}
-.compare-stars svg{
-  position:absolute;
-  width: 34px; height:34px;
-  color: var(--citrus);
-  opacity:0;
-  transform: scale(.2) rotate(0deg);
-  filter: drop-shadow(0 0 8px rgba(212,175,55,.9));
-}
-.compare:hover .compare-stars svg,
-.compare.is-revealed .compare-stars svg{
-  animation: star-sweep 1s ease forwards;
-}
-.compare-stars svg:nth-child(1){ top:15%; left:12%; animation-delay:.00s; }
-.compare-stars svg:nth-child(2){ top:60%; left:22%; animation-delay:.05s; }
-.compare-stars svg:nth-child(3){ top:30%; left:38%; animation-delay:.10s; }
-.compare-stars svg:nth-child(4){ top:75%; left:48%; animation-delay:.15s; }
-.compare-stars svg:nth-child(5){ top:12%; left:58%; animation-delay:.18s; }
-.compare-stars svg:nth-child(6){ top:55%; left:68%; animation-delay:.22s; }
-.compare-stars svg:nth-child(7){ top:22%; left:80%; animation-delay:.26s; }
-.compare-stars svg:nth-child(8){ top:70%; left:88%; animation-delay:.30s; }
-@keyframes star-sweep{
-  0%{ opacity:0; transform: scale(.2) rotate(0deg); }
-  35%{ opacity:1; transform: scale(1.3) rotate(180deg); }
-  100%{ opacity:0; transform: scale(1.7) rotate(320deg); }
-}
 @media (prefers-reduced-motion: reduce){
-  .compare-stars svg{ animation: none !important; opacity:0; }
   .compare-before{ transition: opacity .3s ease; }
 }
 .compare-label{
@@ -1034,7 +993,6 @@ footer{
   .compare{ aspect-ratio: 4/3.6; border-radius:20px; }
   .compare-photo{ width:98%; height:96%; }
   .compare-label{ font-size:10px; padding:5px 10px; top:12px; }
-  .compare-stars svg{ width:26px; height:26px; }
   .compare-caption{ font-size:11px; bottom:12px; left:14px; right:14px; }
 
   /* Scroll stage */
@@ -1099,7 +1057,7 @@ footer{
 
 <header>
   <nav class="nav">
-    <a href="#top" class="logo"><span class="mark"></span>Zovalux</a>
+    <a href="#top" class="logo"><img src="logo.png" alt="Zovalux" class="mark">Zovalux</a>
     <ul class="nav-links">
       <li><a href="#methode">Méthode</a></li>
       <li><a href="#services">Prestations</a></li>
@@ -1150,29 +1108,13 @@ footer{
 
       <div class="compare-stage reveal">
       <div class="compare" id="compare">
-        <div class="compare-layer compare-after">
-          <div class="sparkle" style="top:16%; left:22%; width:16px; height:16px; animation-delay:.1s;"><svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg></div>
-          <div class="sparkle" style="top:32%; left:66%; width:11px; height:11px; animation-delay:.9s;"><svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg></div>
-          <div class="sparkle" style="top:58%; left:14%; width:13px; height:13px; animation-delay:1.5s;"><svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg></div>
-          <div class="sparkle" style="top:20%; left:80%; width:9px; height:9px; animation-delay:.5s;"><svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg></div>
-          <div class="sparkle" style="top:68%; left:56%; width:14px; height:14px; animation-delay:1.9s;"><svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg></div>
-          <img class="compare-photo" src="voiture-propre.png" alt="Voiture propre après passage Zovalux">
+        <div class="compare-layer compare-after">          <img class="compare-photo" src="voiture-propre.png" alt="Voiture propre après passage Zovalux">
         </div>
         <div class="compare-layer compare-before">
           <img class="compare-photo" src="voiture-sale.png" alt="Voiture sale avant passage Zovalux">
         </div>
         <div class="compare-label label-after">Après Zovalux</div>
         <div class="compare-label label-before">Avant</div>
-        <div class="compare-stars" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg>
-          <svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg>
-        </div>
         <div class="compare-caption">Survolez pour découvrir</div>
       </div>
       </div>
@@ -1205,14 +1147,7 @@ footer{
         <div class="stage-car-layer" id="stageDirty" style="opacity:1;">
           <img class="stage-photo" src="voiture-sale.png" alt="Voiture sale">
         </div>
-        <div class="stage-car-layer" id="stageClean" style="opacity:0;">
-          <div class="sparkle" style="top:12%; left:20%; width:18px; height:18px; animation-delay:.1s;"><svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg></div>
-          <div class="sparkle" style="top:30%; left:70%; width:13px; height:13px; animation-delay:1s;"><svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg></div>
-          <div class="sparkle" style="top:62%; left:12%; width:15px; height:15px; animation-delay:1.6s;"><svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg></div>
-          <div class="sparkle" style="top:18%; left:85%; width:10px; height:10px; animation-delay:.6s;"><svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg></div>
-          <div class="sparkle" style="top:72%; left:60%; width:16px; height:16px; animation-delay:2.1s;"><svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg></div>
-          <div class="sparkle" style="top:44%; left:44%; width:9px; height:9px; animation-delay:1.3s;"><svg viewBox="0 0 24 24"><path d="M12 0 L14 10 L24 12 L14 14 L12 24 L10 14 L0 12 L10 10 Z" fill="currentColor"/></svg></div>
-          <img class="stage-photo" src="voiture-propre.png" alt="Voiture propre">
+        <div class="stage-car-layer" id="stageClean" style="opacity:0;">          <img class="stage-photo" src="voiture-propre.png" alt="Voiture propre">
         </div>
       </div>
 
@@ -1521,7 +1456,7 @@ footer{
   <div class="container">
     <div class="footer-top">
       <div>
-        <a href="#top" class="logo"><span class="mark"></span>Zovalux</a>
+        <a href="#top" class="logo"><img src="logo.png" alt="Zovalux" class="mark">Zovalux</a>
         <p style="max-width:260px; font-size:13.5px; color:var(--metal); margin-top:14px; line-height:1.6;">Nettoyage automobile premium à domicile, à Bordeaux et ses environs.</p>
       </div>
       <div class="footer-cols">
