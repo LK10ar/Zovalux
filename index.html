@@ -914,11 +914,11 @@ html.dark .step .step-num{ color: rgba(249,248,246,.16); }
 }
 .bk-row textarea{ resize:vertical; min-height:60px; }
 .bk-submit{
-  width:100%; background: var(--ink); color:#fff; border:none;
+  width:100%; background: var(--ink); color: var(--mist); border:none;
   padding:14px; border-radius:10px; font-weight:700; font-size:14.5px;
-  transition: transform .2s ease, background .2s ease;
+  transition: transform .2s ease, background .2s ease, color .2s ease;
 }
-.bk-submit:hover:not(:disabled){ transform: translateY(-2px); background: var(--pine); }
+.bk-submit:hover:not(:disabled){ transform: translateY(-2px); background: var(--pine); color: var(--mist); }
 .bk-submit:disabled{ opacity:.55; cursor:not-allowed; }
 .bk-note{ font-size:11.5px; color: var(--metal); margin-top:10px; }
 .bk-note.error{ color:#C24A47; }
@@ -999,7 +999,7 @@ html.dark .contact{ background:#0E0E0E; }
 .form-submit{
   width:100%;
   background: var(--citrus);
-  color: var(--ink);
+  color: #15120D;
   border:none;
   padding:14px;
   border-radius:10px;
