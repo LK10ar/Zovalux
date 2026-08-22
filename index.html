@@ -141,7 +141,7 @@ header{
   color: var(--ink);
 }
 .logo .mark{
-  width:90px; height:90px;
+  width:34px; height:34px;
   flex-shrink:0;
   object-fit: contain;
   display:block;
@@ -832,6 +832,106 @@ html.dark .step .step-num{ color: rgba(249,248,246,.16); }
   font-family: var(--serif); font-size:22px; font-style:italic; color:var(--ink); line-height:1.5;
 }
 
+/* Réservation / Calendrier */
+.booking-wrap{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:32px;
+  align-items:start;
+}
+.cal-card{
+  background: var(--card);
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 26px;
+}
+.cal-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:18px;
+}
+.cal-head h3{ font-size:19px; }
+.cal-nav{ display:flex; gap:8px; }
+.cal-nav button{
+  width:34px; height:34px; border-radius:10px;
+  border:1px solid var(--line); background:transparent;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; color:var(--ink);
+}
+.cal-nav button:hover{ background: var(--mist-2); }
+.cal-grid{
+  display:grid; grid-template-columns: repeat(7,1fr);
+  gap:6px;
+}
+.cal-dow{
+  font-family:var(--mono); font-size:10.5px; text-transform:uppercase;
+  color:var(--metal); text-align:center; padding-bottom:6px;
+}
+.cal-day{
+  aspect-ratio:1; border-radius:10px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-size:13.5px; cursor:pointer;
+  border:1px solid transparent;
+  background: var(--mist-2);
+  gap:2px;
+  transition: background .2s ease, transform .15s ease;
+}
+.cal-day:hover:not(.disabled){ background: var(--citrus); color:var(--ink); transform: translateY(-1px); }
+.cal-day.empty{ visibility:hidden; }
+.cal-day.disabled{ opacity:.35; cursor:not-allowed; background:transparent; border:1px dashed var(--line); }
+.cal-day.full{ opacity:.5; cursor:not-allowed; background:transparent; border:1px solid rgba(220,90,90,.4); color:#B5514F; }
+.cal-day.selected{ background: var(--ink); color:#fff; }
+.cal-day .dots{ display:flex; gap:2px; }
+.cal-day .dot{ width:4px; height:4px; border-radius:50%; background: var(--citrus-dark); }
+.cal-day.full .dot{ background:#C96A67; }
+.cal-legend{
+  display:flex; gap:16px; flex-wrap:wrap; margin-top:16px;
+  font-size:12px; color:var(--metal);
+}
+.cal-legend span{ display:flex; align-items:center; gap:6px; }
+.cal-legend i{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+.cal-legend .i-ok{ background: var(--citrus-dark); }
+.cal-legend .i-full{ background:#C96A67; }
+
+.booking-form-card{
+  background: var(--card);
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 26px;
+}
+.booking-form-card h3{ font-size:19px; margin-bottom:4px; }
+.booking-selected-date{
+  font-family:var(--mono); font-size:12.5px; color: var(--citrus-dark);
+  margin-bottom:18px;
+}
+.bk-row{ margin-bottom:14px; }
+.bk-row label{
+  display:block; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em;
+  color: var(--metal); margin-bottom:6px; font-family:var(--mono);
+}
+.bk-row input, .bk-row select, .bk-row textarea{
+  width:100%; background: var(--mist-2); border:1px solid var(--line);
+  border-radius:10px; padding:11px 13px; font-family:var(--sans); font-size:14px; color: var(--ink);
+}
+.bk-row textarea{ resize:vertical; min-height:60px; }
+.bk-submit{
+  width:100%; background: var(--ink); color:#fff; border:none;
+  padding:14px; border-radius:10px; font-weight:700; font-size:14.5px;
+  transition: transform .2s ease, background .2s ease;
+}
+.bk-submit:hover:not(:disabled){ transform: translateY(-2px); background: var(--pine); }
+.bk-submit:disabled{ opacity:.55; cursor:not-allowed; }
+.bk-note{ font-size:11.5px; color: var(--metal); margin-top:10px; }
+.bk-note.error{ color:#C24A47; }
+.bk-note.success{ color: var(--citrus-dark); font-weight:600; }
+.booking-placeholder{
+  font-size:14px; color: var(--metal); line-height:1.6;
+  display:flex; align-items:center; justify-content:center;
+  height:100%; min-height:260px; text-align:center;
+}
+@media (max-width:900px){
+  .booking-wrap{ grid-template-columns:1fr; }
+}
+
 /* CTA / Contact */
 .contact{
   background: var(--ink);
@@ -966,7 +1066,7 @@ footer{
   /* Nav */
   .nav{ padding:14px 18px; }
   .logo{ font-size:18px; gap:8px; }
-  .logo .mark{ width:90px; height:90px; }
+  .logo .mark{ width:28px; height:28px; }
   .nav-links{ display:none; }
   .nav-cta{ gap:8px; }
   .btn-ghost{ display:none !important; }
@@ -1063,6 +1163,7 @@ footer{
       <li><a href="#services">Prestations</a></li>
       <li><a href="#zones">Zones</a></li>
       <li><a href="#avis">Avis</a></li>
+      <li><a href="#reservation">Réserver</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <div class="nav-cta">
@@ -1071,7 +1172,7 @@ footer{
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M2.5 12H5M19 12h2.5M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>
       </button>
       <a href="#contact" class="btn btn-ghost">06.xx.xx.xx.xx</a>
-      <a href="#contact" class="btn btn-primary">Devis gratuit</a>
+      <a href="#reservation" class="btn btn-primary">Réserver</a>
       <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
   </nav>
@@ -1080,6 +1181,7 @@ footer{
     <a href="#services">Prestations</a>
     <a href="#zones">Zones d'intervention</a>
     <a href="#avis">Avis clients</a>
+    <a href="#reservation">Réserver</a>
     <a href="#contact">Contact</a>
   </div>
 </header>
@@ -1408,6 +1510,79 @@ footer{
     </div>
   </section>
 
+  <!-- RESERVATION -->
+  <section id="reservation">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">Réservation en ligne</div>
+          <h2 class="text-reveal">Choisissez votre créneau</h2>
+        </div>
+        <p>Maximum 3 véhicules pris en charge par jour, pour garantir un travail soigné à chacun.</p>
+      </div>
+      <div class="booking-wrap reveal">
+        <div class="cal-card">
+          <div class="cal-head">
+            <h3 id="calMonthLabel">—</h3>
+            <div class="cal-nav">
+              <button id="calPrev" type="button" aria-label="Mois précédent">‹</button>
+              <button id="calNext" type="button" aria-label="Mois suivant">›</button>
+            </div>
+          </div>
+          <div class="cal-grid" id="calDow">
+            <div class="cal-dow">Lun</div><div class="cal-dow">Mar</div><div class="cal-dow">Mer</div>
+            <div class="cal-dow">Jeu</div><div class="cal-dow">Ven</div><div class="cal-dow">Sam</div><div class="cal-dow">Dim</div>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div class="cal-legend">
+            <span><i class="i-ok"></i> Disponible</span>
+            <span><i class="i-full"></i> Complet (3/3)</span>
+          </div>
+        </div>
+
+        <div class="booking-form-card" id="bookingFormCard">
+          <div class="booking-placeholder" id="bookingPlaceholder">
+            Sélectionnez une date sur le calendrier pour réserver votre créneau.
+          </div>
+          <form id="bookingForm" style="display:none;">
+            <h3>Finaliser la réservation</h3>
+            <div class="booking-selected-date" id="bookingSelectedDate"></div>
+            <div class="bk-row">
+              <label>Nom complet</label>
+              <input id="bk-name" name="name" type="text" placeholder="Votre nom" required>
+            </div>
+            <div class="bk-row">
+              <label>Email</label>
+              <input id="bk-email" name="email" type="email" placeholder="vous@exemple.com" required>
+            </div>
+            <div class="bk-row">
+              <label>Téléphone</label>
+              <input id="bk-phone" name="phone" type="tel" placeholder="06 xx xx xx xx" required>
+            </div>
+            <div class="bk-row">
+              <label>Formule</label>
+              <select id="bk-service" name="service">
+                <option value="Extérieur essentiel">Extérieur essentiel — 49€</option>
+                <option value="Intérieur en profondeur">Intérieur en profondeur — 89€</option>
+                <option value="Formule signature">Formule signature — 139€</option>
+              </select>
+            </div>
+            <div class="bk-row">
+              <label>Véhicule</label>
+              <input id="bk-car" name="vehicule" type="text" placeholder="Marque et modèle">
+            </div>
+            <div class="bk-row">
+              <label>Adresse d'intervention</label>
+              <textarea id="bk-address" name="address" placeholder="Adresse à Bordeaux ou communes voisines"></textarea>
+            </div>
+            <button type="submit" class="bk-submit" id="bkSubmitBtn">Confirmer la réservation</button>
+            <p class="bk-note" id="bkNote">Vous recevrez une confirmation par email.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- CONTACT -->
   <section id="contact">
     <div class="container">
@@ -1619,6 +1794,154 @@ function apply3DTilt(selector, intensity){
 apply3DTilt('.pillar', 8);
 apply3DTilt('.service-card', 10);
 apply3DTilt('.counter-card', 7);
+
+// ---------- Réservation : calendrier + formulaire ----------
+// ⚠️ Remplace cette URL par celle de ton service Render une fois déployé
+// (ex: https://zovalux-api.onrender.com)
+const BOOKING_API_BASE = "https://zovalux-api.onrender.com";
+
+const calMonthLabel = document.getElementById('calMonthLabel');
+const calGrid = document.getElementById('calGrid');
+const calPrev = document.getElementById('calPrev');
+const calNext = document.getElementById('calNext');
+const bookingPlaceholder = document.getElementById('bookingPlaceholder');
+const bookingForm = document.getElementById('bookingForm');
+const bookingSelectedDate = document.getElementById('bookingSelectedDate');
+const bkNote = document.getElementById('bkNote');
+const bkSubmitBtn = document.getElementById('bkSubmitBtn');
+
+const MOIS_FR = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+const today = new Date();
+today.setHours(0,0,0,0);
+let calYear = today.getFullYear();
+let calMonth = today.getMonth();
+let selectedDateStr = null;
+let monthAvailability = {}; // { "2026-08-25": count }
+
+function fmtDate(y, m, d){
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+async function fetchMonthAvailability(y, m){
+  const monthStr = `${y}-${String(m+1).padStart(2,'0')}`;
+  try{
+    const res = await fetch(`${BOOKING_API_BASE}/api/availability?month=${monthStr}`);
+    if(!res.ok) throw new Error('bad response');
+    const data = await res.json();
+    monthAvailability = data.counts || {};
+  }catch(err){
+    monthAvailability = {};
+    console.warn('Impossible de charger les disponibilités', err);
+  }
+}
+
+async function renderCalendar(){
+  if(calGrid) calGrid.innerHTML = '';
+  calMonthLabel.textContent = `${MOIS_FR[calMonth]} ${calYear}`;
+  await fetchMonthAvailability(calYear, calMonth);
+
+  const firstDay = new Date(calYear, calMonth, 1);
+  let startOffset = firstDay.getDay() - 1; // lundi = 0
+  if(startOffset < 0) startOffset = 6;
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+  for(let i = 0; i < startOffset; i++){
+    const empty = document.createElement('div');
+    empty.className = 'cal-day empty';
+    calGrid.appendChild(empty);
+  }
+
+  for(let d = 1; d <= daysInMonth; d++){
+    const dateStr = fmtDate(calYear, calMonth, d);
+    const cellDate = new Date(calYear, calMonth, d);
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    const count = monthAvailability[dateStr] || 0;
+    const isPast = cellDate < today;
+    const isSunday = cellDate.getDay() === 0;
+
+    cell.innerHTML = `<span>${d}</span>`;
+
+    if(isPast || isSunday){
+      cell.classList.add('disabled');
+    } else if(count >= 3){
+      cell.classList.add('full');
+      cell.innerHTML += `<div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+    } else {
+      cell.innerHTML += `<div class="dots">${'<span class="dot"></span>'.repeat(count)}</div>`;
+      cell.addEventListener('click', () => selectDate(dateStr, cell));
+    }
+    if(dateStr === selectedDateStr) cell.classList.add('selected');
+    calGrid.appendChild(cell);
+  }
+}
+
+function selectDate(dateStr, cellEl){
+  selectedDateStr = dateStr;
+  document.querySelectorAll('.cal-day.selected').forEach(el => el.classList.remove('selected'));
+  cellEl.classList.add('selected');
+  const d = new Date(dateStr + 'T00:00:00');
+  bookingSelectedDate.textContent = `Créneau demandé : ${d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' })}`;
+  bookingPlaceholder.style.display = 'none';
+  bookingForm.style.display = 'block';
+  bkNote.textContent = "Vous recevrez une confirmation par email.";
+  bkNote.className = 'bk-note';
+}
+
+calPrev?.addEventListener('click', () => {
+  calMonth--; if(calMonth < 0){ calMonth = 11; calYear--; }
+  renderCalendar();
+});
+calNext?.addEventListener('click', () => {
+  calMonth++; if(calMonth > 11){ calMonth = 0; calYear++; }
+  renderCalendar();
+});
+
+bookingForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if(!selectedDateStr) return;
+  bkSubmitBtn.disabled = true;
+  bkSubmitBtn.textContent = 'Envoi en cours...';
+  const payload = {
+    date: selectedDateStr,
+    name: document.getElementById('bk-name').value,
+    email: document.getElementById('bk-email').value,
+    phone: document.getElementById('bk-phone').value,
+    service: document.getElementById('bk-service').value,
+    vehicule: document.getElementById('bk-car').value,
+    address: document.getElementById('bk-address').value,
+  };
+  try{
+    const res = await fetch(`${BOOKING_API_BASE}/api/book`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(res.ok && data.success){
+      bkNote.textContent = 'Réservation confirmée ! Vous allez recevoir un email de confirmation.';
+      bkNote.className = 'bk-note success';
+      bookingForm.reset();
+      bkSubmitBtn.textContent = 'Réservation confirmée ✓';
+      renderCalendar();
+    } else if(data.error === 'FULL'){
+      bkNote.textContent = "Ce jour vient de se remplir. Merci d'en choisir un autre.";
+      bkNote.className = 'bk-note error';
+      bkSubmitBtn.textContent = 'Confirmer la réservation';
+      renderCalendar();
+    } else {
+      throw new Error(data.error || 'unknown');
+    }
+  }catch(err){
+    bkNote.textContent = "L'envoi a échoué. Contactez-nous directement à uipact@gmail.com.";
+    bkNote.className = 'bk-note error';
+    bkSubmitBtn.textContent = 'Confirmer la réservation';
+  }finally{
+    bkSubmitBtn.disabled = false;
+  }
+});
+
+if(calGrid) renderCalendar();
 
 // Contact form (Formspree)
 const leadForm = document.getElementById('leadForm');
