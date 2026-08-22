@@ -153,7 +153,7 @@ header.admin-head h1{ font-size:21px; }
 
 <script>
 // ⚠️ Remplace par l'URL de ton API Render une fois déployée
-const API_BASE = "https://zovalux-api.onrender.com";
+const API_BASE = "https://back-zovalux.onrender.com";
 
 let ADMIN_SECRET = localStorage.getItem('zovalux_admin_secret') || null;
 
@@ -163,18 +163,32 @@ function apiHeaders(){
 
 async function login(){
   const secret = document.getElementById('secretInput').value;
+  const errorEl = document.getElementById('loginError');
+  errorEl.style.display = 'none';
+  let res;
   try{
-    const res = await fetch(`${API_BASE}/api/admin/login`, {
+    res = await fetch(`${API_BASE}/api/admin/login`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ secret })
     });
-    if(!res.ok) throw new Error();
-    ADMIN_SECRET = secret;
-    localStorage.setItem('zovalux_admin_secret', secret);
-    showAdmin();
-  }catch(err){
-    document.getElementById('loginError').style.display = 'block';
+  }catch(networkErr){
+    errorEl.textContent = "Impossible de contacter le serveur. Vérifie l'URL de l'API (variable API_BASE) et que ton service Render est bien déployé.";
+    errorEl.style.display = 'block';
+    return;
   }
+  if(res.status === 401){
+    errorEl.textContent = 'Mot de passe incorrect.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  if(!res.ok){
+    errorEl.textContent = `Erreur serveur (${res.status}). Vérifie la configuration Render.`;
+    errorEl.style.display = 'block';
+    return;
+  }
+  ADMIN_SECRET = secret;
+  localStorage.setItem('zovalux_admin_secret', secret);
+  showAdmin();
 }
 function logout(){
   localStorage.removeItem('zovalux_admin_secret');
