@@ -832,6 +832,37 @@ html.dark .step .step-num{ color: rgba(249,248,246,.16); }
   font-family: var(--serif); font-size:22px; font-style:italic; color:var(--ink); line-height:1.5;
 }
 
+/* Album avant/après */
+.album-grid{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:16px;
+}
+.album-item{
+  position:relative;
+  border-radius: 16px;
+  overflow:hidden;
+  aspect-ratio: 4/3;
+  border:1px solid var(--line);
+  background: var(--mist-2);
+}
+.album-item img{ width:100%; height:100%; object-fit:cover; display:block; }
+.album-tag{
+  position:absolute; top:10px; left:10px;
+  font-family: var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.06em;
+  padding:5px 10px; border-radius:100px; color:#fff;
+  background: rgba(0,0,0,.5); backdrop-filter: blur(4px);
+}
+.album-tag.after{ background: rgba(212,175,55,.85); color:#15120D; }
+.album-caption{
+  position:absolute; bottom:0; left:0; right:0;
+  padding:10px 12px; font-size:12px; color:#fff;
+  background: linear-gradient(to top, rgba(0,0,0,.65), transparent);
+}
+.album-empty{ color: var(--metal); font-size:14px; grid-column: 1/-1; text-align:center; padding:30px 0; }
+@media (max-width:900px){ .album-grid{ grid-template-columns: repeat(2,1fr); } }
+@media (max-width:560px){ .album-grid{ grid-template-columns: 1fr 1fr; gap:10px; } }
+
 /* Réservation / Calendrier */
 .booking-wrap{
   display:grid;
@@ -1163,6 +1194,7 @@ footer{
       <li><a href="#services">Prestations</a></li>
       <li><a href="#zones">Zones</a></li>
       <li><a href="#avis">Avis</a></li>
+      <li><a href="#album">Album</a></li>
       <li><a href="#reservation">Réserver</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
@@ -1181,6 +1213,7 @@ footer{
     <a href="#services">Prestations</a>
     <a href="#zones">Zones d'intervention</a>
     <a href="#avis">Avis clients</a>
+    <a href="#album">Album avant/après</a>
     <a href="#reservation">Réserver</a>
     <a href="#contact">Contact</a>
   </div>
@@ -1510,6 +1543,22 @@ footer{
     </div>
   </section>
 
+  <!-- ALBUM AVANT / APRÈS -->
+  <section id="album">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <div class="eyebrow">Album</div>
+          <h2 class="text-reveal">Avant / après</h2>
+        </div>
+        <p>Un aperçu réel de nos interventions, mises à jour régulièrement.</p>
+      </div>
+      <div class="album-grid" id="albumGrid">
+        <p class="album-empty">Chargement de l'album…</p>
+      </div>
+    </div>
+  </section>
+
   <!-- RESERVATION -->
   <section id="reservation">
     <div class="container">
@@ -1575,8 +1624,8 @@ footer{
               <label>Adresse d'intervention</label>
               <textarea id="bk-address" name="address" placeholder="Adresse à Bordeaux ou communes voisines"></textarea>
             </div>
-            <button type="submit" class="bk-submit" id="bkSubmitBtn">Confirmer la réservation</button>
-            <p class="bk-note" id="bkNote">Vous recevrez une confirmation par email.</p>
+            <button type="submit" class="bk-submit" id="bkSubmitBtn">Envoyer la demande</button>
+            <p class="bk-note" id="bkNote">Votre demande sera examinée par notre équipe avant confirmation.</p>
           </form>
         </div>
       </div>
@@ -1795,6 +1844,37 @@ apply3DTilt('.pillar', 8);
 apply3DTilt('.service-card', 10);
 apply3DTilt('.counter-card', 7);
 
+// ---------- Album avant/après ----------
+async function loadAlbum(){
+  const grid = document.getElementById('albumGrid');
+  if(!grid) return;
+  try{
+    const res = await fetch(`${BOOKING_API_BASE}/api/gallery`);
+    const data = await res.json();
+    if(!data.items || !data.items.length){
+      grid.innerHTML = '<p class="album-empty">Album en cours de constitution — revenez bientôt.</p>';
+      return;
+    }
+    grid.innerHTML = data.items.map(item => `
+      <div class="album-item">
+        <img src="${item.imageData}" alt="${item.caption || (item.type === 'before' ? 'Avant' : 'Après')}" loading="lazy">
+        <span class="album-tag ${item.type}">${item.type === 'before' ? 'Avant' : 'Après'}</span>
+        ${item.caption ? `<span class="album-caption">${item.caption}</span>` : ''}
+      </div>
+    `).join('');
+  }catch(err){
+    grid.innerHTML = '<p class="album-empty">Album temporairement indisponible.</p>';
+  }
+}
+loadAlbum();
+
+// ---------- Suivi de visite (une fois par session) ----------
+(function trackVisit(){
+  if(sessionStorage.getItem('zovalux_visit_tracked')) return;
+  sessionStorage.setItem('zovalux_visit_tracked', '1');
+  fetch(`${BOOKING_API_BASE}/api/track-visit`, { method: 'POST' }).catch(() => {});
+})();
+
 // ---------- Réservation : calendrier + formulaire ----------
 // ⚠️ Remplace cette URL par celle de ton service Render une fois déployé
 // (ex: https://zovalux-api.onrender.com)
@@ -1884,7 +1964,7 @@ function selectDate(dateStr, cellEl){
   bookingSelectedDate.textContent = `Créneau demandé : ${d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' })}`;
   bookingPlaceholder.style.display = 'none';
   bookingForm.style.display = 'block';
-  bkNote.textContent = "Vous recevrez une confirmation par email.";
+  bkNote.textContent = "Votre demande sera examinée par notre équipe avant confirmation.";
   bkNote.className = 'bk-note';
 }
 
@@ -1919,15 +1999,15 @@ bookingForm?.addEventListener('submit', async (e) => {
     });
     const data = await res.json();
     if(res.ok && data.success){
-      bkNote.textContent = 'Réservation confirmée ! Vous allez recevoir un email de confirmation.';
+      bkNote.textContent = 'Demande envoyée ! Vous recevrez un email dès que votre créneau sera confirmé.';
       bkNote.className = 'bk-note success';
       bookingForm.reset();
-      bkSubmitBtn.textContent = 'Réservation confirmée ✓';
+      bkSubmitBtn.textContent = 'Demande envoyée ✓';
       renderCalendar();
     } else if(data.error === 'FULL'){
       bkNote.textContent = "Ce jour vient de se remplir. Merci d'en choisir un autre.";
       bkNote.className = 'bk-note error';
-      bkSubmitBtn.textContent = 'Confirmer la réservation';
+      bkSubmitBtn.textContent = 'Envoyer la demande';
       renderCalendar();
     } else {
       throw new Error(data.error || 'unknown');
@@ -1935,7 +2015,7 @@ bookingForm?.addEventListener('submit', async (e) => {
   }catch(err){
     bkNote.textContent = "L'envoi a échoué. Contactez-nous directement à uipact@gmail.com.";
     bkNote.className = 'bk-note error';
-    bkSubmitBtn.textContent = 'Confirmer la réservation';
+    bkSubmitBtn.textContent = 'Envoyer la demande';
   }finally{
     bkSubmitBtn.disabled = false;
   }
