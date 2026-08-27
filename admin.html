@@ -1,347 +1,536 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zovalux — Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --ink:#15120D; --mist:#F6F1E7; --mist-2:#EDE4D2; --metal:#8A7C64;
-  --gold:#D4AF37; --gold-dark:#B08A2B; --card:#FFFFFF; --line: rgba(21,18,13,.12);
-  --danger:#C24A47; --ok:#3F8F5F;
-  --serif:"Fraunces",serif; --sans:"Inter",sans-serif; --mono:"Space Grotesk",sans-serif;
-}
-*{box-sizing:border-box; margin:0; padding:0;}
-body{ font-family:var(--sans); background:var(--mist); color:var(--ink); }
-h1,h2{ font-family:var(--serif); font-weight:600; }
-.wrap{ max-width:1000px; margin:0 auto; padding:32px 20px 80px; }
+// server.js — API Zovalux : réservations, emails, admin, album, statistiques
+// Déploiement : Render (Web Service, Node)
+//
+// Variables d'environnement requises :
+//   MONGODB_URI          -> connexion MongoDB
+//   MONGODB_DB             (optionnel, défaut "zovalux")
+//   GMAIL_USER            -> ex: uipact@gmail.com
+//   GMAIL_APP_PASSWORD    -> mot de passe d'application Gmail (PAS ton mot de passe normal)
+//   ADMIN_EMAIL           -> email qui reçoit les notifs de nouvelle réservation
+//   ADMIN_SECRET          -> mot de passe pour accéder au panneau admin.html
 
-/* Login */
-#loginView{
-  max-width:360px; margin:14vh auto; text-align:center;
-}
-#loginView h1{ font-size:24px; margin-bottom:6px; }
-#loginView p{ color:var(--metal); font-size:14px; margin-bottom:24px; }
-input, select, textarea{
-  width:100%; font-family:var(--sans); font-size:14px;
-  background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px;
-}
-button{
-  font-family:var(--sans); cursor:pointer; border:none; border-radius:10px;
-  padding:12px 18px; font-weight:600; font-size:14px;
-}
-.btn-gold{ background:var(--gold); color:var(--ink); }
-.btn-gold:hover{ background:var(--gold-dark); }
-.btn-dark{ background:var(--ink); color:#fff; }
-.btn-outline{ background:transparent; border:1px solid var(--line); color:var(--ink); }
+const express = require('express');
+const cors = require('cors');
+const { MongoClient, ObjectId } = require('mongodb');
 
-/* Layout admin */
-#adminView{ display:none; }
-header.admin-head{
-  display:flex; justify-content:space-between; align-items:center;
-  margin-bottom:28px;
-}
-header.admin-head h1{ font-size:21px; }
-.tabs{ display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
-.tab-btn{
-  background:var(--card); border:1px solid var(--line); color:var(--ink);
-  padding:9px 16px; border-radius:100px; font-size:13.5px;
-}
-.tab-btn.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
-.panel{ display:none; }
-.panel.active{ display:block; }
-
-/* Réservations */
-.booking-row{
-  background:var(--card); border:1px solid var(--line); border-radius:14px;
-  padding:16px 18px; margin-bottom:10px;
-  display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap;
-}
-.booking-info b{ font-family:var(--mono); }
-.booking-info .sub{ color:var(--metal); font-size:13px; margin-top:2px; }
-.status-pill{
-  font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em;
-  padding:4px 10px; border-radius:100px; white-space:nowrap;
-}
-.status-pending{ background:rgba(212,175,55,.15); color:var(--gold-dark); }
-.status-confirmed{ background:rgba(63,143,95,.15); color:var(--ok); }
-.status-rejected{ background:rgba(194,74,71,.15); color:var(--danger); }
-.booking-actions{ display:flex; gap:8px; }
-.booking-actions button{ padding:8px 14px; font-size:12.5px; }
-
-/* Album */
-.upload-card{
-  background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:20px;
-}
-.upload-row{ display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
-.upload-row > *{ flex:1; min-width:140px; }
-.gallery-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:14px; }
-.gallery-item{ background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
-.gallery-item img{ width:100%; height:120px; object-fit:cover; display:block; }
-.gallery-item .meta{ padding:10px; }
-.gallery-item .meta small{ color:var(--metal); }
-.gallery-item .del{ width:100%; background:transparent; color:var(--danger); font-size:12px; padding:8px; border-top:1px solid var(--line); }
-
-/* Stats */
-.stat-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:24px; }
-.stat-card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; }
-.stat-card b{ display:block; font-family:var(--mono); font-size:28px; }
-.stat-card span{ font-size:12.5px; color:var(--metal); }
-.visit-list{ font-size:13.5px; }
-.visit-list div{ display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--line); }
-
-.empty{ color:var(--metal); font-size:14px; padding:20px 0; text-align:center; }
-.error-msg{ color:var(--danger); font-size:13px; margin-top:10px; }
-</style>
-</head>
-<body>
-
-<div id="loginView">
-  <h1>Zovalux — Admin</h1>
-  <p>Accès réservé. Entrez le mot de passe admin.</p>
-  <input type="password" id="secretInput" placeholder="Mot de passe admin" style="margin-bottom:10px;">
-  <button class="btn-gold" style="width:100%;" onclick="login()">Se connecter</button>
-  <p class="error-msg" id="loginError" style="display:none;">Mot de passe incorrect.</p>
-</div>
-
-<div id="adminView">
-  <div class="wrap">
-    <header class="admin-head">
-      <h1>Zovalux — Admin</h1>
-      <button class="btn-outline" onclick="logout()">Déconnexion</button>
-    </header>
-
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="bookings">Réservations</button>
-      <button class="tab-btn" data-tab="gallery">Album avant/après</button>
-      <button class="tab-btn" data-tab="stats">Statistiques</button>
-    </div>
-
-    <!-- RESERVATIONS -->
-    <div class="panel active" id="panel-bookings">
-      <div id="bookingsList"></div>
-    </div>
-
-    <!-- ALBUM -->
-    <div class="panel" id="panel-gallery">
-      <div class="upload-card">
-        <div class="upload-row">
-          <input type="file" id="galleryFile" accept="image/*">
-          <select id="galleryType">
-            <option value="before">Avant (sale)</option>
-            <option value="after">Après (propre)</option>
-          </select>
+const app = express();
+app.use(express.json({ limit: '8mb' })); // gallery images en base64
+// --- Template HTML global pour les emails ---
+function getEmailTemplate(title, content) {
+  return `
+    <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #F6F1E7; padding: 40px 20px; color: #15120D;">
+      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+        
+        <!-- En-tête noire avec logo -->
+        <div style="background-color: #15120D; padding: 30px; text-align: center; border-bottom: 3px solid #D4AF37;">
+          <img src="https://lk10ar.github.io/Zovalux/logo.png" alt="Zovalux" style="width: 80px; height: auto;">
         </div>
-        <div class="upload-row">
-          <input type="text" id="galleryCaption" placeholder="Légende (optionnel)">
-          <button class="btn-gold" onclick="uploadPhoto()">Ajouter la photo</button>
+        
+        <!-- Contenu -->
+        <div style="padding: 40px 30px;">
+          <h2 style="margin-top: 0; color: #15120D; font-size: 22px; font-weight: 600;">${title}</h2>
+          <div style="font-size: 15px; line-height: 1.6; color: #333333;">
+            ${content}
+          </div>
         </div>
-        <p class="error-msg" id="galleryError" style="display:none;"></p>
+        
+        <!-- Pied de page -->
+        <div style="background-color: #F9F9F9; padding: 20px 30px; text-align: center; font-size: 12px; color: #8A7C64; border-top: 1px solid #EEEEEE;">
+          <strong>Zovalux</strong> — Nettoyage automobile premium à domicile<br>
+          Bordeaux & alentours
+        </div>
+
       </div>
-      <div class="gallery-grid" id="galleryGrid"></div>
     </div>
+  `;
+}
+const ALLOWED_ORIGINS = [
+  'http://zovalux.com',
+  'http://www.zovalux.com',
+  'https://zovalux.com',
+  'https://www.zovalux.com',
+  'https://lk10ar.github.io',
+  'https://LK10ar.github.io', // Tolérance pour les majuscules de ton pseudo
+  'http://localhost:3000',
+  'http://127.0.0.1:5500',
+  'http://127.0.0.1:5501', // Port alternatif très utilisé en local
+  'null' // Autorise les tests depuis un fichier ouvert sur le disque dur (file:///)
+];
 
-    <!-- STATS -->
-    <div class="panel" id="panel-stats">
-      <div class="stat-cards" id="statCards"></div>
-      <h2 style="font-size:16px; margin-bottom:10px;">Visites par jour (30 derniers jours avec activité)</h2>
-      <div class="visit-list" id="visitList"></div>
-    </div>
-  </div>
-</div>
+app.use(cors({
+  origin: function(origin, callback){
+    // Autorise les requêtes sans origine (comme Postman ou les scripts serveurs)
+    if(!origin || origin === 'null') return callback(null, true);
+    
+    const originLower = origin.toLowerCase();
+    
+    // RÈGLE INTELLIGENTE : On autorise automatiquement tout ce qui touche à zovalux.com, GitHub ou le local
+    if (
+      originLower.includes('zovalux.com') || 
+      originLower.includes('lk10ar.github.io') || 
+      originLower.includes('localhost') || 
+      originLower.includes('127.0.0.1')
+    ) {
+      return callback(null, true);
+    }
+    
+    // Sinon, on bloque et on affiche l'erreur dans les logs Render
+    callback(new Error('Origin non autorisée : ' + origin));
+  }
+}));
 
-<script>
-// ⚠️ Remplace par l'URL de ton API Render une fois déployée
-const API_BASE = "https://back-zovalux-ir0y.onrender.com";
+const MAX_PER_DAY = 5;
+const SERVICE_DURATION_MIN = 60;      // 1h de main d'œuvre par intervention
+const DAY_START = '08:00';
+const DAY_END = '18:00';
+const SLOT_STEP_MIN = 10;             // granularité des créneaux proposés
+const DEFAULT_TRAVEL_MIN = 20;        // valeur de secours si géocodage/trajet échoue
+const LARGE_VEHICLE_SURCHARGE = 15;   // supplément SUV/monospace 7-8 places/4x4/véhicule rallongé
+const NOMINATIM_USER_AGENT = 'ZovaluxBooking/1.0 (contact: zovalux.pro@gmail.com)';
+const MONGODB_URI = process.env.MONGODB_URI;
+const DB_NAME = process.env.MONGODB_DB || 'zovalux';
+const ADMIN_SECRET = (process.env.ADMIN_SECRET || '').trim();
+console.log(`ADMIN_SECRET chargé : ${ADMIN_SECRET ? ADMIN_SECRET.length + ' caractères' : 'ABSENT'}`);
 
-let ADMIN_SECRET = localStorage.getItem('zovalux_admin_secret') || null;
-
-function apiHeaders(){
-  return { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET };
+let db;
+async function getDb(){
+  if(db) return db;
+  const client = new MongoClient(MONGODB_URI);
+  await client.connect();
+  db = client.db(DB_NAME);
+  await db.collection('bookings').createIndex({ date: 1 });
+  await db.collection('visits').createIndex({ date: 1 }, { unique: true });
+  return db;
 }
 
-async function login(){
-  const secret = document.getElementById('secretInput').value;
-  const errorEl = document.getElementById('loginError');
-  errorEl.style.display = 'none';
-  let res;
+// ---------- Email ----------
+// ---------- Email (via API Brevo) ----------
+async function sendMail({ to, subject, html }){
+  const apiKey = process.env.BREVO_API_KEY;
+  if(!apiKey){
+    console.warn('BREVO_API_KEY non configurée — emails désactivés.');
+    return false;
+  }
+
   try{
-    res = await fetch(`${API_BASE}/api/admin/login`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ secret })
+    // Appel direct à l'API de Brevo en HTTPS (jamais bloqué par Render)
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'api-key': apiKey
+      },
+      body: JSON.stringify({
+        sender: { name: 'Zovalux', email: 'zovalux.pro@gmail.com' }, // Ton adresse expéditeur vérifiée
+        to: [{ email: to }],
+        subject: subject,
+        htmlContent: html
+      })
     });
-  }catch(networkErr){
-    errorEl.textContent = "Impossible de contacter le serveur. Vérifie l'URL de l'API (variable API_BASE) et que ton service Render est bien déployé.";
-    errorEl.style.display = 'block';
-    return;
-  }
-  if(res.status === 401){
-    errorEl.textContent = 'Mot de passe incorrect.';
-    errorEl.style.display = 'block';
-    return;
-  }
-  if(!res.ok){
-    errorEl.textContent = `Erreur serveur (${res.status}). Vérifie la configuration Render.`;
-    errorEl.style.display = 'block';
-    return;
-  }
-  ADMIN_SECRET = secret;
-  localStorage.setItem('zovalux_admin_secret', secret);
-  showAdmin();
-}
-function logout(){
-  localStorage.removeItem('zovalux_admin_secret');
-  ADMIN_SECRET = null;
-  document.getElementById('adminView').style.display = 'none';
-  document.getElementById('loginView').style.display = 'block';
-}
-function showAdmin(){
-  document.getElementById('loginView').style.display = 'none';
-  document.getElementById('adminView').style.display = 'block';
-  loadBookings(); loadGallery(); loadStats();
-}
-if(ADMIN_SECRET) showAdmin();
 
-// Tabs
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    if(!response.ok){
+      const errorData = await response.json();
+      console.error('Erreur API Brevo:', errorData);
+      return false;
+    }
+
+    return true;
+  }catch(err){
+    console.error('Erreur de connexion à Brevo:', err.message);
+    return false;
+  }
+}
+
+// ---------- Auth admin (simple) ----------
+function requireAdmin(req, res, next){
+  const secret = String(req.headers['x-admin-secret'] || '').trim();
+  if(!ADMIN_SECRET || secret !== ADMIN_SECRET){
+    return res.status(401).json({ error: 'UNAUTHORIZED' });
+  }
+  next();
+}
+
+function isValidFutureDate(dateStr){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return false;
+  const d = new Date(dateStr + 'T00:00:00');
+  if(isNaN(d.getTime())) return false;
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  return d >= today;
+}
+
+// =======================================================
+// CRÉNEAUX HORAIRES — géocodage + temps de trajet (OSRM, gratuit)
+// =======================================================
+
+const geocodeCache = new Map();
+
+async function geocodeAddress(address){
+  if(!address) return null;
+  const key = String(address).trim().toLowerCase();
+  if(geocodeCache.has(key)) return geocodeCache.get(key);
+  try{
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address + ', Bordeaux, France')}`;
+    const res = await fetch(url, { headers: { 'User-Agent': NOMINATIM_USER_AGENT } });
+    const data = await res.json();
+    if(!data || !data.length){ geocodeCache.set(key, null); return null; }
+    const coords = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+    geocodeCache.set(key, coords);
+    return coords;
+  }catch(err){
+    console.warn('Géocodage échoué pour', address, err.message);
+    return null;
+  }
+}
+
+async function travelTimeMinutes(fromCoords, toCoords){
+  if(!fromCoords || !toCoords) return DEFAULT_TRAVEL_MIN;
+  try{
+    const url = `https://router.project-osrm.org/route/v1/driving/${fromCoords.lon},${fromCoords.lat};${toCoords.lon},${toCoords.lat}?overview=false`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(!data.routes || !data.routes.length) return DEFAULT_TRAVEL_MIN;
+    return Math.ceil(data.routes[0].duration / 60);
+  }catch(err){
+    console.warn('OSRM échoué', err.message);
+    return DEFAULT_TRAVEL_MIN;
+  }
+}
+
+function timeToMinutes(hhmm){
+  const [h, m] = hhmm.split(':').map(Number);
+  return h * 60 + m;
+}
+function minutesToTime(min){
+  const h = Math.floor(min / 60), m = min % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+
+// Calcule les heures de créneau disponibles ce jour-là pour une nouvelle adresse,
+// en tenant compte d'1h de main d'œuvre + du trajet estimé vers/depuis chaque
+// rendez-vous déjà pris ce jour-là.
+async function computeAvailableSlots(database, date, newAddress){
+  const dayBookings = await database.collection('bookings')
+    .find({ date, status: { $ne: 'rejected' } })
+    .project({ time: 1, address: 1 })
+    .toArray();
+
+  if(dayBookings.length >= MAX_PER_DAY) return [];
+
+  const newCoords = await geocodeAddress(newAddress);
+
+  const existing = [];
+  for(const b of dayBookings){
+    if(!b.time) continue; // anciennes réservations sans heure : ignorées du calcul de trajet
+    const coords = await geocodeAddress(b.address);
+    const travel = await travelTimeMinutes(coords, newCoords);
+    existing.push({ time: b.time, travel });
+  }
+
+  const dayStart = timeToMinutes(DAY_START);
+  const dayEnd = timeToMinutes(DAY_END);
+  const slots = [];
+
+  for(let start = dayStart; start + SERVICE_DURATION_MIN <= dayEnd; start += SLOT_STEP_MIN){
+    const end = start + SERVICE_DURATION_MIN;
+    let ok = true;
+    for(const b of existing){
+      const bStart = timeToMinutes(b.time);
+      const bEnd = bStart + SERVICE_DURATION_MIN;
+      if(start >= bStart){
+        if(start < bEnd + b.travel){ ok = false; break; }
+      } else {
+        if(end + b.travel > bStart){ ok = false; break; }
+      }
+    }
+    if(ok) slots.push(minutesToTime(start));
+  }
+  return slots;
+}
+
+// =======================================================
+// RESERVATIONS (public)
+// =======================================================
+
+// GET /api/availability?month=YYYY-MM
+app.get('/api/availability', async (req, res) => {
+  try{
+    const month = req.query.month;
+    if(!month || !/^\d{4}-\d{2}$/.test(month)) return res.status(400).json({ error: 'INVALID_MONTH' });
+    const database = await getDb();
+    const bookings = await database.collection('bookings')
+      .find({ date: { $regex: `^${month}` }, status: { $ne: 'rejected' } })
+      .project({ date: 1 })
+      .toArray();
+    const counts = {};
+    bookings.forEach(b => { counts[b.date] = (counts[b.date] || 0) + 1; });
+    res.json({ counts });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'SERVER_ERROR' });
+  }
+});
+
+// GET /api/available-slots?date=YYYY-MM-DD&address=...
+app.get('/api/available-slots', async (req, res) => {
+  try{
+    const { date, address } = req.query;
+    if(!isValidFutureDate(date)) return res.status(400).json({ error: 'INVALID_DATE' });
+    if(!address) return res.status(400).json({ error: 'MISSING_ADDRESS' });
+    const database = await getDb();
+    const slots = await computeAvailableSlots(database, date, address);
+    res.json({ slots });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'SERVER_ERROR' });
+  }
+});
+
+// POST /api/book
+app.post('/api/book', async (req, res) => {
+  try{
+    const { date, time, name, email, phone, service, vehicule, vehicleCategory, address } = req.body || {};
+    if(!isValidFutureDate(date)) return res.status(400).json({ error: 'INVALID_DATE' });
+    if(!name || !email || !phone) return res.status(400).json({ error: 'MISSING_FIELDS' });
+    if(!time || !/^\d{2}:\d{2}$/.test(time)) return res.status(400).json({ error: 'MISSING_TIME' });
+    if(!address) return res.status(400).json({ error: 'MISSING_ADDRESS' });
+
+    const database = await getDb();
+    const collection = database.collection('bookings');
+    const currentCount = await collection.countDocuments({ date, status: { $ne: 'rejected' } });
+    if(currentCount >= MAX_PER_DAY) return res.status(409).json({ error: 'FULL' });
+
+    // Revérifie que le créneau demandé est toujours libre (anti double-réservation)
+    const freeSlots = await computeAvailableSlots(database, date, address);
+    if(!freeSlots.includes(time)) return res.status(409).json({ error: 'SLOT_TAKEN' });
+
+    const isLargeVehicle = vehicleCategory === 'large';
+
+    const doc = {
+      date,
+      time,
+      name: String(name).slice(0, 120),
+      email: String(email).slice(0, 160),
+      phone: String(phone).slice(0, 40),
+      service: service ? String(service).slice(0, 80) : null,
+      vehicule: vehicule ? String(vehicule).slice(0, 120) : null,
+      vehicleCategory: isLargeVehicle ? 'large' : 'standard',
+      surcharge: isLargeVehicle ? LARGE_VEHICLE_SURCHARGE : 0,
+      address: address ? String(address).slice(0, 300) : null,
+      status: 'pending', // pending | confirmed | rejected
+      createdAt: new Date()
+    };
+    const result = await collection.insertOne(doc);
+
+    // Email au client : demande reçue, en attente
+ // Email au client : demande reçue, en attente
+    sendMail({
+      to: doc.email,
+      subject: 'Zovalux — Votre demande de réservation est bien reçue',
+      html: getEmailTemplate(
+        'Demande de réservation',
+        `<p>Bonjour <b>${doc.name}</b>,</p>
+         <p>Votre demande pour le <b>${doc.date} à ${doc.time}</b> (${doc.service || 'formule non précisée'}) a bien été enregistrée.</p>
+         ${doc.surcharge > 0 ? `<p>Un supplément de <b>${doc.surcharge}€</b> s'applique pour votre catégorie de véhicule (SUV / monospace / 4x4 / véhicule rallongé).</p>` : ''}
+         <p>Elle est actuellement <b>en attente de confirmation</b> par notre équipe. Vous recevrez un nouvel email dès qu'elle sera validée.</p>
+         <p>À très vite,<br>L'équipe Zovalux</p>`
+      )
+    });
+    // Email à l'admin : nouvelle demande à traiter
+    if(process.env.ADMIN_EMAIL){
+      sendMail({
+        to: process.env.ADMIN_EMAIL,
+        subject: `Nouvelle demande de réservation — ${doc.date}`,
+        html: `<p>Nouvelle demande :</p>
+          <ul>
+            <li>Date : ${doc.date}</li>
+            <li>Heure : ${doc.time}</li>
+            <li>Nom : ${doc.name}</li>
+            <li>Email : ${doc.email}</li>
+            <li>Téléphone : ${doc.phone}</li>
+            <li>Formule : ${doc.service || '-'}</li>
+            <li>Véhicule : ${doc.vehicule || '-'} (${doc.vehicleCategory === 'large' ? `catégorie 2 — SUV/monospace/4x4/rallongé, +${doc.surcharge}€` : 'catégorie 1 — citadine/berline'})</li>
+            <li>Adresse : ${doc.address || '-'}</li>
+          </ul>
+          <p>Rendez-vous sur le panneau admin pour confirmer ou refuser.</p>`
+      });
+    }
+
+    res.json({ success: true, id: result.insertedId, dayCount: currentCount + 1 });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'SERVER_ERROR' });
+  }
+});
+
+// =======================================================
+// ADMIN — Réservations
+// =======================================================
+
+app.post('/api/admin/login', (req, res) => {
+  const secret = String((req.body && req.body.secret) || '').trim();
+  const cleanExpected = ADMIN_SECRET ? ADMIN_SECRET.trim() : ADMIN_SECRET;
+  if(cleanExpected && secret === cleanExpected) return res.json({ success: true });
+  res.status(401).json({ error: 'INVALID_SECRET', receivedLength: secret.length, expectedLength: cleanExpected ? cleanExpected.length : 0 });
+});
+
+app.get('/api/admin/bookings', requireAdmin, async (req, res) => {
+  try{
+    const database = await getDb();
+    const bookings = await database.collection('bookings')
+      .find({})
+      .sort({ date: 1, createdAt: 1 })
+      .limit(300)
+      .toArray();
+    res.json({ bookings });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'SERVER_ERROR' });
+  }
+});
+
+app.post('/api/admin/bookings/:id/:action', requireAdmin, async (req, res) => {
+  try{
+    const { id, action } = req.params;
+    if(!['confirm', 'reject'].includes(action)) return res.status(400).json({ error: 'INVALID_ACTION' });
+    const status = action === 'confirm' ? 'confirmed' : 'rejected';
+
+    const database = await getDb();
+    const collection = database.collection('bookings');
+    const booking = await collection.findOne({ _id: new ObjectId(id) });
+    if(!booking) return res.status(404).json({ error: 'NOT_FOUND' });
+
+    await collection.updateOne({ _id: new ObjectId(id) }, { $set: { status } });
+
+    // --- LE NOUVEAU DESIGN EST APPLIQUÉ ICI ---
+    const title = status === 'confirmed' ? 'Réservation confirmée ✓' : 'Mise à jour de votre demande';
+    const content = status === 'confirmed'
+      ? `<p>Bonjour <b>${booking.name}</b>,</p>
+         <p>Excellente nouvelle ! Votre réservation du <b>${booking.date}${booking.time ? ' à ' + booking.time : ''}</b> est <b>confirmée</b>.</p>
+         <p>Notre équipe se présentera à l'adresse indiquée avec tout le matériel nécessaire pour prendre soin de votre véhicule.</p>
+         <p>À très bientôt,<br>L'équipe Zovalux</p>`
+      : `<p>Bonjour <b>${booking.name}</b>,</p>
+         <p>Nous ne pouvons malheureusement pas honorer votre demande du <b>${booking.date}</b> (créneau indisponible ou hors zone).</p>
+         <p>N'hésitez pas à faire une nouvelle demande pour une autre date sur notre site.</p>
+         <p>Cordialement,<br>L'équipe Zovalux</p>`;
+
+    sendMail({
+      to: booking.email,
+      subject: status === 'confirmed' ? 'Zovalux — Votre réservation est confirmée ✓' : 'Zovalux — Votre demande n\'a pas pu être retenue',
+      html: getEmailTemplate(title, content)
+    });
+
+    res.json({ success: true });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'SERVER_ERROR' });
+  }
+});
+
+// =======================================================
+// ALBUM AVANT / APRÈS
+// =======================================================
+
+// GET /api/gallery — public
+app.get('/api/gallery', async (req, res) => {
+  try{
+    const database = await getDb();
+    const items = await database.collection('gallery')
+      .find({})
+      .sort({ createdAt: -1 })
+      .limit(60)
+      .toArray();
+    res.json({ items });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'SERVER_ERROR' });
+  }
+});
+
+// POST /api/admin/gallery — { imageData (base64), caption, type: 'before'|'after'|'before-after' }
+app.post('/api/admin/gallery', requireAdmin, async (req, res) => {
+  try{
+    const { imageData, caption, type } = req.body || {};
+    if(!imageData || !imageData.startsWith('data:image')) return res.status(400).json({ error: 'INVALID_IMAGE' });
+    const database = await getDb();
+    const result = await database.collection('gallery').insertOne({
+      imageData,
+      caption: caption ? String(caption).slice(0, 140) : '',
+      type: (type === 'before' || type === 'after' || type === 'before-after') ? type : 'after',
+      createdAt: new Date()
+    });
+    res.json({ success: true, id: result.insertedId });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'SERVER_ERROR' });
+  }
+});
+
+// DELETE /api/admin/gallery/:id
+app.delete('/api/admin/gallery/:id', requireAdmin, async (req, res) => {
+  try{
+    const database = await getDb();
+    await database.collection('gallery').deleteOne({ _id: new ObjectId(req.params.id) });
+    res.json({ success: true });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'SERVER_ERROR' });
+  }
+});
+
+// =======================================================
+// STATISTIQUES DE VISITE
+// =======================================================
+
+// POST /api/track-visit — appelé une fois par session sur le site public
+app.post('/api/track-visit', async (req, res) => {
+  try{
+    const database = await getDb();
+    const today = new Date().toISOString().slice(0, 10);
+    await database.collection('visits').updateOne(
+      { date: today },
+      { $inc: { count: 1 } },
+      { upsert: true }
+    );
+    res.json({ success: true });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'SERVER_ERROR' });
+  }
+});
+
+// GET /api/admin/stats
+app.get('/api/admin/stats', requireAdmin, async (req, res) => {
+  try{
+    const database = await getDb();
+    const visits = await database.collection('visits')
+      .find({})
+      .sort({ date: -1 })
+      .limit(60)
+      .toArray();
+    const total = visits.reduce((sum, v) => sum + (v.count || 0), 0);
+    const bookingsTotal = await database.collection('bookings').countDocuments({});
+    const bookingsPending = await database.collection('bookings').countDocuments({ status: 'pending' });
+    res.json({ visits, total, bookingsTotal, bookingsPending });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'SERVER_ERROR' });
+  }
+});
+
+app.get('/', (req, res) => res.send('Zovalux API — OK'));
+
+// Diagnostic — ne révèle jamais la valeur, juste si les variables sont bien chargées
+app.get('/api/debug-config', (req, res) => {
+  res.json({
+    adminSecretConfigured: !!process.env.ADMIN_SECRET,
+    adminSecretLength: process.env.ADMIN_SECRET ? process.env.ADMIN_SECRET.length : 0,
+    mongoConfigured: !!process.env.MONGODB_URI,
+    gmailConfigured: !!(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD),
+    adminEmailConfigured: !!process.env.ADMIN_EMAIL
   });
 });
 
-// ---------- Réservations ----------
-async function loadBookings(){
-  const list = document.getElementById('bookingsList');
-  list.innerHTML = '<p class="empty">Chargement...</p>';
-  try{
-    const res = await fetch(`${API_BASE}/api/admin/bookings`, { headers: apiHeaders() });
-    const data = await res.json();
-    if(!data.bookings || !data.bookings.length){
-      list.innerHTML = '<p class="empty">Aucune réservation pour le moment.</p>';
-      return;
-    }
-    list.innerHTML = data.bookings.map(b => `
-      <div class="booking-row">
-        <div class="booking-info">
-          <b>${b.date}</b> — ${b.name} <span class="status-pill status-${b.status}">${b.status}</span>
-          <div class="sub">${b.email} · ${b.phone} · ${b.service || ''} ${b.vehicule ? '· ' + b.vehicule : ''}</div>
-          ${b.address ? `<div class="sub">${b.address}</div>` : ''}
-        </div>
-        <div class="booking-actions">
-          ${b.status === 'pending' ? `
-            <button class="btn-gold" onclick="actOnBooking('${b._id}','confirm')">Confirmer</button>
-            <button class="btn-outline" onclick="actOnBooking('${b._id}','reject')">Refuser</button>
-          ` : ''}
-        </div>
-      </div>
-    `).join('');
-  }catch(err){
-    list.innerHTML = '<p class="empty">Erreur de chargement.</p>';
-  }
-}
-async function actOnBooking(id, action){
-  await fetch(`${API_BASE}/api/admin/bookings/${id}/${action}`, { method: 'POST', headers: apiHeaders() });
-  loadBookings();
-}
-
-// ---------- Album ----------
-function resizeImage(file, maxWidth){
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const scale = Math.min(1, maxWidth / img.width);
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/jpeg', 0.75));
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-async function uploadPhoto(){
-  const fileInput = document.getElementById('galleryFile');
-  const errorEl = document.getElementById('galleryError');
-  errorEl.style.display = 'none';
-  if(!fileInput.files[0]){
-    errorEl.textContent = 'Choisis une photo.';
-    errorEl.style.display = 'block';
-    return;
-  }
-  try{
-    const imageData = await resizeImage(fileInput.files[0], 1000);
-    const res = await fetch(`${API_BASE}/api/admin/gallery`, {
-      method: 'POST', headers: apiHeaders(),
-      body: JSON.stringify({
-        imageData,
-        caption: document.getElementById('galleryCaption').value,
-        type: document.getElementById('galleryType').value
-      })
-    });
-    if(!res.ok) throw new Error();
-    fileInput.value = '';
-    document.getElementById('galleryCaption').value = '';
-    loadGallery();
-  }catch(err){
-    errorEl.textContent = "Échec de l'envoi.";
-    errorEl.style.display = 'block';
-  }
-}
-async function loadGallery(){
-  const grid = document.getElementById('galleryGrid');
-  try{
-    const res = await fetch(`${API_BASE}/api/gallery`);
-    const data = await res.json();
-    if(!data.items || !data.items.length){
-      grid.innerHTML = '<p class="empty">Aucune photo pour le moment.</p>';
-      return;
-    }
-    grid.innerHTML = data.items.map(item => `
-      <div class="gallery-item">
-        <img src="${item.imageData}" alt="${item.caption || ''}">
-        <div class="meta"><small>${item.type === 'before' ? 'Avant' : 'Après'}${item.caption ? ' — ' + item.caption : ''}</small></div>
-        <button class="del" onclick="deletePhoto('${item._id}')">Supprimer</button>
-      </div>
-    `).join('');
-  }catch(err){
-    grid.innerHTML = '<p class="empty">Erreur de chargement.</p>';
-  }
-}
-async function deletePhoto(id){
-  await fetch(`${API_BASE}/api/admin/gallery/${id}`, { method: 'DELETE', headers: apiHeaders() });
-  loadGallery();
-}
-
-// ---------- Stats ----------
-async function loadStats(){
-  try{
-    const res = await fetch(`${API_BASE}/api/admin/stats`, { headers: apiHeaders() });
-    const data = await res.json();
-    document.getElementById('statCards').innerHTML = `
-      <div class="stat-card"><b>${data.total || 0}</b><span>Visites (30j)</span></div>
-      <div class="stat-card"><b>${data.bookingsTotal || 0}</b><span>Réservations totales</span></div>
-      <div class="stat-card"><b>${data.bookingsPending || 0}</b><span>En attente</span></div>
-    `;
-    const list = document.getElementById('visitList');
-    if(!data.visits || !data.visits.length){
-      list.innerHTML = '<p class="empty">Pas encore de données de visite.</p>';
-    } else {
-      list.innerHTML = data.visits.map(v => `<div><span>${v.date}</span><b>${v.count}</b></div>`).join('');
-    }
-  }catch(err){
-    document.getElementById('statCards').innerHTML = '<p class="empty">Erreur de chargement.</p>';
-  }
-}
-</script>
-</body>
-</html>
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Zovalux API en écoute sur le port ${PORT}`));
